@@ -1,0 +1,20 @@
+{
+  "name": "referral-bot",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "bun src/bun.ts",
+    "start:node": "node build/index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.5",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.0.7",
+    "@types/node": "20.11.20"
+  }
+}

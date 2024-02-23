@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "target": "es2016",
+        "lib": [],
+        "module": "commonjs",
+        "rootDir": "./",
+        "types": [
+            "node",
+            "bun"
+        ],
+        "resolveJsonModule": true,
+        "outDir": "./build",
+        "removeComments": true,
+        "importsNotUsedAsValues": "remove",
+        "noEmitOnError": true,
+        "preserveConstEnums": true,
+        "preserveValueImports": false,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "skipLibCheck": true
+    }
+}
