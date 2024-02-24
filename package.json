@@ -6,7 +6,8 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "bun src/bun.ts",
-    "start:node": "node build/index.js"
+    "start:node": "node build/index.js",
+    "test": "bun test"
   },
   "dependencies": {
     "discord.js": "^14.14.1",
