@@ -1,5 +1,5 @@
 import Service from "../core/Service";
-import { Awaitable, Snowflake } from "discord.js";
+import { Snowflake } from "discord.js";
 import { z } from "zod";
 import path from "node:path";
 import FileSystem from "../core/FileSystem";
@@ -19,6 +19,10 @@ class ConfigService extends Service {
     private _config: z.infer<typeof configContainerSchema> = {};
 
     public override async boot() {
+        await this.load();
+    }
+
+    public async load() {
         if (await FileSystem.exists(this.configPath)) {
             this.client.logger.info(`Loading configuration from: ${this.configPath}`);
             const config = await FileSystem.readFile(this.configPath, { json: true });
@@ -35,6 +39,10 @@ class ConfigService extends Service {
         }
 
         return this._config[guildId] ?? null;
+    }
+
+    public entries() {
+        return this._config;
     }
 
     public onReady() {

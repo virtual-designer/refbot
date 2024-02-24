@@ -3,7 +3,6 @@
         "target": "es2016",
         "lib": [],
         "module": "commonjs",
-        "rootDir": "./src",
         "types": [
             "node",
             "bun"
@@ -20,5 +19,6 @@
         "strict": true,
         "skipLibCheck": true
     },
-    "exclude": ["tests/", "tests/**/*"]
+    "exclude": ["./tests/", "./tests/**/*"],
+    "include": ["./src/**/*.ts"]
 }
