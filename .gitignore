@@ -4,3 +4,4 @@ package-lock.json
 bun.lockb
 .idea/
 .vscode/
+build/
