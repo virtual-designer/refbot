@@ -1,4 +1,5 @@
 import * as fs from "fs/promises";
+import { existsSync } from "node:fs";
 
 class FileSystem {
     private static readonly isBun = !!process.isBun;
@@ -29,6 +30,14 @@ class FileSystem {
         await fs.writeFile(path, input, {
             encoding: 'utf-8',
         });
+    }
+
+    static async exists(path: string) {
+        if (this.isBun) {
+            return Bun.file(path).exists();
+        }
+
+        return existsSync(path);
     }
 }
 

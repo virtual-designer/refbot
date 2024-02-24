@@ -1,5 +1,5 @@
 import Command from "../../core/Command";
-import { Awaitable } from "discord.js";
+import { Context } from "../../core/CommandContext";
 
 class TestCommand extends Command {
     public readonly name = 'test';
@@ -7,8 +7,8 @@ class TestCommand extends Command {
     public readonly group = 'testing';
     public readonly syntax = '';
 
-    public handle(): Awaitable<void> {
-        this.client.logger.debug("test command was executed");
+    public async handle(context: Context) {
+        await context.reply("Hello world");
     }
 }
 

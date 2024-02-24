@@ -7,6 +7,7 @@ import chalk from 'chalk';
 import { version } from '../../package.json';
 import Service from "./Service";
 import CommandService from "../services/CommandService";
+import Fetcher from "../utils/Fetcher";
 
 class Client extends DiscordClient {
     protected static readonly intents = [
@@ -27,6 +28,8 @@ class Client extends DiscordClient {
     }
 
     public async boot() {
+        Fetcher.client = this;
+
         await this.printBanner();
         await this.loadServices();
         await this.loadEvents();
