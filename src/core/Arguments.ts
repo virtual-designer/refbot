@@ -80,7 +80,7 @@ class Arguments {
                 );
 
                 if (!optional && !entity) {
-                    throw new InvalidArgumentException(`Argument #${index} evaluates to null`, index, "entity:null");
+                    throw new InvalidArgumentException(errors?.["entity:null"] ?? `Argument #${index} evaluates to null`, index, "entity:null");
                 }
 
                 return entity as Argument<T, O>;
@@ -92,7 +92,7 @@ class Arguments {
                 const value = type === ArgumentType.Number ? Number.parseFloat(num) : Number.parseInt(num);
 
                 if (Number.isNaN(value)) {
-                    throw new InvalidArgumentException(`Argument #${index} is not a valid ${type === ArgumentType.Number ? 'number' : 'integer'}`, index, "invalid:int");
+                    throw new InvalidArgumentException(errors?.[`invalid:${type === ArgumentType.Number ? 'num' : 'int'}`] ?? `Argument #${index} is not a valid ${type === ArgumentType.Number ? 'number' : 'integer'}`, index, `invalid:${type === ArgumentType.Number ? 'num' : 'int'}`);
                 }
 
                 return value as Argument<T, O>;
@@ -101,7 +101,7 @@ class Arguments {
                 const ret = argument.trim();
 
                 if (!ret) {
-                    throw new InvalidArgumentException(`Argument #${index} must not be empty`, index, "required");
+                    throw new InvalidArgumentException(errors?.['required'] ?? `Argument #${index} must not be empty`, index, "required");
                 }
 
                 return ret as Argument<T, O>;
@@ -122,7 +122,7 @@ class Arguments {
                 input = input.trimEnd();
 
                 if (!input) {
-                    throw new InvalidArgumentException(`Argument #${index} must not be empty`, index, "required");
+                    throw new InvalidArgumentException(errors?.['required'] ?? `Argument #${index} must not be empty`, index, "required");
                 }
 
                 return input as Argument<T, O>;

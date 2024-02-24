@@ -1,7 +1,7 @@
 import { HasClient } from "../utils/HasClient";
 import { Awaitable, ChatInputCommandInteraction, Message } from "discord.js";
 import { InteractionCommandContext, LegacyCommandContext } from "./CommandContext";
-import { Arguments } from "./Arguments";
+import { Arguments, InvalidArgumentException } from "./Arguments";
 
 abstract class Command extends HasClient {
     public abstract readonly name: string;
@@ -12,7 +12,7 @@ abstract class Command extends HasClient {
 
     abstract handle(context: InteractionCommandContext | LegacyCommandContext): Awaitable<void>;
 
-    public execute(message: Message | ChatInputCommandInteraction, args?: Arguments) {
+    public async execute(message: Message | ChatInputCommandInteraction, args?: Arguments) {
         let context;
 
         if (message instanceof Message) {
@@ -22,7 +22,22 @@ abstract class Command extends HasClient {
             context = new InteractionCommandContext(this.client, message);
         }
 
-        return this.handle(context);
+        try {
+            return this.handle(context);
+        }
+        catch (error) {
+            if (error instanceof InvalidArgumentException) {
+                this.client.logger.debug(`[command ${this.name}] Argument Error (${error.getType()}) [index ${error.getIndex()} ${error.message}`);
+
+                await context.reply({
+                    content: error.message,
+                    ephemeral: true
+                });
+            }
+            else {
+                this.client.logger.error(error);
+            }
+        }
     }
 }
 
