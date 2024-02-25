@@ -1,5 +1,6 @@
 {
     "911987536379912193": {
-        "prefix": "!"
+        "prefix": "!",
+        "register_commands_locally": true
     }
 }

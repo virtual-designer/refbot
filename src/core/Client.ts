@@ -8,6 +8,7 @@ import { version } from '../../package.json';
 import Service from "./Service";
 import CommandService from "../services/CommandService";
 import Fetcher from "../utils/Fetcher";
+import { PrismaClient } from "@prisma/client";
 
 class Client extends DiscordClient {
     protected static readonly intents = [
@@ -20,6 +21,12 @@ class Client extends DiscordClient {
     ];
     public static readonly logger = new Logger('system', !process.env.NO_LOG_DATE_TIME);
     public readonly services = new Map<string, Service>();
+    public readonly serviceList = [
+        'ConfigService',
+        'CommandService',
+        'ReferralService'
+    ];
+    private _prisma!: PrismaClient;
 
     public constructor() {
         super({
@@ -27,10 +34,23 @@ class Client extends DiscordClient {
         });
     }
 
+
+    get prisma() {
+        return this._prisma;
+    }
+
+    public initializeDatabase() {
+        this._prisma = new PrismaClient({
+            errorFormat: "pretty",
+            log: ["info", "warn", "error", "query"]
+        });
+    }
+
     public async boot() {
         Fetcher.client = this;
 
         await this.printBanner();
+        this.initializeDatabase();
         await this.loadServices();
         await this.loadEvents();
         await this.loadCommands();
@@ -90,17 +110,8 @@ class Client extends DiscordClient {
     }
 
     protected async loadServices(servicesDirectory = path.resolve(__dirname, '../services')) {
-        const files = await fs.readdir(servicesDirectory);
-
-        for (const file of files) {
+        for (const file of this.serviceList) {
             const filePath = path.join(servicesDirectory, file);
-            const stat = await fs.lstat(filePath);
-
-            if (stat.isDirectory()) {
-                await this.loadServices(filePath);
-                continue;
-            }
-
             const { default: Service } = await import(filePath);
             const service = new Service(this);
             await service.boot();

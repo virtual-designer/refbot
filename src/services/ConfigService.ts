@@ -7,7 +7,8 @@ import FileSystem from "../core/FileSystem";
 const zSnowflake = z.string().regex(/^\d+$/, "Must be a valid snowflake");
 
 const configSchema = z.object({
-    prefix: z.string().default("!")
+    prefix: z.string().default("!"),
+    register_commands_locally: z.boolean().default(false)
 });
 const configContainerSchema = z.record(zSnowflake, configSchema);
 

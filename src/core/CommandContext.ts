@@ -1,9 +1,9 @@
 import {
-    ChatInputCommandInteraction,
+    ChatInputCommandInteraction, GuildMember, InteractionDeferReplyOptions,
     InteractionReplyOptions, InteractionResponse,
     Message,
     MessageCreateOptions,
-    MessagePayload
+    MessagePayload, User
 } from "discord.js";
 import { Arguments } from "./Arguments";
 import Client from "./Client";
@@ -18,7 +18,44 @@ abstract class CommandContext {
             return this.message.reply(options as MessageCreateOptions) as Promise<Message>;
         }
         else if (this instanceof InteractionCommandContext) {
-            return this.interaction.reply(options as InteractionReplyOptions) as Promise<InteractionResponse>;
+            if (this.interaction.deferred) {
+                return this.interaction.editReply(options as InteractionReplyOptions) as Promise<Message>;
+            }
+            else {
+                return this.interaction.reply(options as InteractionReplyOptions) as Promise<InteractionResponse>;
+            }
+        }
+    }
+
+    error(options: MessageCreateOptions | MessagePayload | InteractionReplyOptions | string) {
+        return this.replyWithPrefix(':x:', options);
+    }
+
+    success(options: MessageCreateOptions | MessagePayload | InteractionReplyOptions | string) {
+        return this.replyWithPrefix(':check:', options);
+    }
+
+    private replyWithPrefix(prefix: string, options: MessageCreateOptions | MessagePayload | InteractionReplyOptions | string) {
+        const content = `${prefix} ${typeof options === 'string' ? options : 'content' in options ? options.content : ''}`;
+        const finalOptions = typeof options === 'string' ? content : {
+            ...options,
+            content
+        };
+
+        return this.reply(finalOptions as MessageCreateOptions);
+    }
+
+    get user(): User {
+        return this instanceof InteractionCommandContext ? this.interaction.user : this instanceof LegacyCommandContext ? this.message.author : (null as never);
+    }
+
+    get member(): GuildMember {
+        return this instanceof InteractionCommandContext ? this.interaction.member as GuildMember : this instanceof LegacyCommandContext ? this.message.member! : (null as never);
+    }
+
+    public defer(options?: InteractionDeferReplyOptions) {
+        if (this instanceof InteractionCommandContext && !this.interaction.deferred) {
+            return this.interaction.deferReply(options);
         }
     }
 }

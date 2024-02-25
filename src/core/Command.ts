@@ -1,7 +1,15 @@
 import { HasClient } from "../utils/HasClient";
-import { Awaitable, ChatInputCommandInteraction, Message } from "discord.js";
+import {
+    Awaitable,
+    ChatInputCommandInteraction,
+    Message,
+    SlashCommandBuilder,
+    SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder
+} from "discord.js";
 import { InteractionCommandContext, LegacyCommandContext } from "./CommandContext";
 import { Arguments, InvalidArgumentException } from "./Arguments";
+
+export type Builder = SlashCommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder;
 
 abstract class Command extends HasClient {
     public abstract readonly name: string;
@@ -9,8 +17,15 @@ abstract class Command extends HasClient {
     public abstract readonly description: string;
     public abstract readonly syntax: string;
     public readonly aliases: string[] = [];
+    public readonly subcommands: string[] = [];
+    public readonly supportsInteractions: boolean = true;
+    public readonly supportsLegacy: boolean = true;
 
-    abstract handle(context: InteractionCommandContext | LegacyCommandContext): Awaitable<void>;
+    abstract handle(context: InteractionCommandContext | LegacyCommandContext): Awaitable<unknown>;
+
+    public build(builder: SlashCommandBuilder): Builder {
+        return builder;
+    }
 
     public async execute(message: Message | ChatInputCommandInteraction, args?: Arguments) {
         let context;

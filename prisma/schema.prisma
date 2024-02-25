@@ -1,0 +1,25 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DB_URL")
+}
+
+model RefCode {
+    id Int @id @default(autoincrement())
+    code String @unique
+    createdBy String
+    usedBy DiscordUser[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    @@map("refcodes")
+}
+
+model DiscordUser {
+    id String @id
+    refCodesUsed RefCode[]
+    createdAt DateTime @default(now())
+}

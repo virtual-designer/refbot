@@ -33,8 +33,8 @@ class Arguments {
     protected readonly commandName: string;
 
     public constructor(protected readonly client: Client, protected readonly message: Message) {
-        const prefix = this.client.getService<ConfigService>('config').config(message.guildId)?.prefix ?? '!';
-        this.argv = message.content.slice(prefix.length).trim().split(/ +/);
+        const prefix: string = this.client.getService<ConfigService>('config').config(message.guildId)?.prefix ?? '!';
+        this.argv = message.content.toLowerCase().slice(prefix.length).trim().split(/ +/);
         this.commandName = this.argv[0];
         this.args = this.argv.slice(1);
     }
@@ -108,8 +108,9 @@ class Arguments {
 
             case ArgumentType.StringRest:
                 const pastArgs = this.args.slice(0, index);
-                const prefix = this.client.getService<ConfigService>('config').config(this.message.guildId)?.prefix ?? '!';
+                const prefix: string = this.client.getService<ConfigService>('config').config(this.message.guildId)?.prefix ?? '!';
                 let input = this.message.content
+                    .toLowerCase()
                     .slice(prefix.length)
                     .trimStart()
                     .slice(this.commandName.length)
@@ -132,7 +133,7 @@ class Arguments {
     }
 }
 
-enum ArgumentType {
+export enum ArgumentType {
     String,
     StringRest,
     Number,
@@ -150,7 +151,7 @@ type Argument<T extends ArgumentType, O extends boolean = false> = {
     [ArgumentType.String]: string,
     [ArgumentType.User]: O extends true ? User | null : User,
     [ArgumentType.GuildMember]: O extends true ? GuildMember | null : GuildMember,
-}[T] | (O extends true ? never : null);
+}[T] | (O extends false ? never : null);
 
 type ErrorMessageTypes = "entity:null" | "required" | "invalid:num" | "invalid:int";
 type ErrorMessages = {
