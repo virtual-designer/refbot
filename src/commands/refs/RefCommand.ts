@@ -9,7 +9,7 @@ class RefCommand extends Command {
     public readonly description = 'Referral management command.';
     public readonly group = 'refs';
     public readonly syntax = '<subcommand> [...args]';
-    public readonly subcommands = ["create", "delete", "update", "list", "view", "show"];
+    public readonly subcommands = ["create", "delete", "update", "list", "view", "show", "users"];
     public readonly requiredError = `Please specify a valid subcommand! The available subcommands are: \`${this.subcommands.join('`, `')}\`.`;
     public readonly aliases = ['refs'];
 
@@ -23,6 +23,12 @@ class RefCommand extends Command {
             )
             .addSubcommand(subcommand =>
                 subcommand.setName("view").setDescription("View a referral by code")
+                    .addStringOption(option =>
+                        option.setName("code").setDescription("The unique code of the referral.").setRequired(true)
+                    )
+            )
+            .addSubcommand(subcommand =>
+                subcommand.setName("users").setDescription("List the users of a referral")
                     .addStringOption(option =>
                         option.setName("code").setDescription("The unique code of the referral.").setRequired(true)
                     )

@@ -25,7 +25,7 @@ class RefCreateCommand extends Command {
         const ref = await this.client.getService<ReferralService>('referral').createCode(context.user.id, code ?? undefined);
 
         if (!ref) {
-            return context.error(`That referral code is not available at the moment.`);
+            return context.error(context.isRanByModerator() ? `The referral code is already taken. You're being told the exact reason because you're a moderator.` : `That referral code is not available at the moment.`);
         }
 
         await context.reply({
@@ -35,7 +35,7 @@ class RefCreateCommand extends Command {
                     description: `||${ref.code}||`,
                     color: Colors.Blurple,
                     footer: {
-                        text: `Only you and the admins can see statistics for this referral`
+                        text: `Only you and the moderators can see statistics for this referral`
                     },
                     timestamp: new Date().toISOString()
                 }

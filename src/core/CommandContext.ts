@@ -7,6 +7,7 @@ import {
 } from "discord.js";
 import { Arguments } from "./Arguments";
 import Client from "./Client";
+import { isModerator } from "../utils/utils";
 
 abstract class CommandContext {
     public readonly type: "legacy" | "interaction" = 'interaction';
@@ -57,6 +58,10 @@ abstract class CommandContext {
         if (this instanceof InteractionCommandContext && !this.interaction.deferred) {
             return this.interaction.deferReply(options);
         }
+    }
+
+    public isRanByModerator() {
+        return isModerator(this.client, this.member);
     }
 }
 

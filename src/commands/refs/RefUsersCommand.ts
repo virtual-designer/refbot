@@ -4,17 +4,16 @@ import ReferralService from "../../services/ReferralService";
 import { Colors, heading, HeadingLevel, time } from "discord.js";
 import { ArgumentType } from "../../core/Arguments";
 
-class RefViewCommand extends Command {
-    public readonly name = 'ref::view';
-    public readonly description = 'View a referral information.';
+class RefUsersCommand extends Command {
+    public readonly name = 'ref::users';
+    public readonly description = 'List the users of a referral.';
     public readonly group = 'refs';
     public readonly syntax = '<code: string>';
     public readonly supportsInteractions = false;
-    public readonly aliases = ['ref::show'];
 
     public async handle(context: Context) {
         const code: string = (context.type === "legacy" ? await context.args.at(1, ArgumentType.String, false, {
-            required: "Please provide a referral code to view the statistics!"
+            required: "Please provide a referral code!"
         }) : context.interaction.options.getString('code', true));
 
         await context.defer({
@@ -30,15 +29,21 @@ class RefViewCommand extends Command {
             });
         }
 
+        let description = '';
+
+        for (const user of ref.usedBy) {
+            description += `* <@${user.id}> - \`${user.id}\` - ${time(user.createdAt, 'R')}\n`;
+        }
+
         await context.reply({
             embeds: [
                 {
-                    title: `Referral #${ref.id}`,
-                    description: `${heading("Code", HeadingLevel.Three)}\n||${ref.code}||`,
+                    title: `Users of Referral #${ref.id}`,
                     color: Colors.Blurple,
+                    description: description === '' ? '*No users yet*' : description,
                     fields: [
                         {
-                            name: "Uses",
+                            name: "Total Uses",
                             value: ref.usedBy.length.toString(),
                             inline: true
                         },
@@ -64,4 +69,4 @@ class RefViewCommand extends Command {
     }
 }
 
-export default RefViewCommand;
+export default RefUsersCommand;

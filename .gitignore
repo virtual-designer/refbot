@@ -5,3 +5,4 @@ bun.lockb
 .idea/
 .vscode/
 build/
+src/commands/testing

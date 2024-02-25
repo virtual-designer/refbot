@@ -20,6 +20,7 @@ abstract class Command extends HasClient {
     public readonly subcommands: string[] = [];
     public readonly supportsInteractions: boolean = true;
     public readonly supportsLegacy: boolean = true;
+    public readonly moderatorOnly: boolean = false;
 
     abstract handle(context: InteractionCommandContext | LegacyCommandContext): Awaitable<unknown>;
 
@@ -35,6 +36,13 @@ abstract class Command extends HasClient {
         }
         else {
             context = new InteractionCommandContext(this.client, message);
+        }
+
+        if (this.moderatorOnly && !context.isRanByModerator()) {
+            return context.error({
+                content: "You don't have permission to run this command.",
+                ephemeral: true
+            });
         }
 
         try {

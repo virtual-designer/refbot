@@ -34,8 +34,8 @@ class Arguments {
 
     public constructor(protected readonly client: Client, protected readonly message: Message) {
         const prefix: string = this.client.getService<ConfigService>('config').config(message.guildId)?.prefix ?? '!';
-        this.argv = message.content.toLowerCase().slice(prefix.length).trim().split(/ +/);
-        this.commandName = this.argv[0];
+        this.argv = message.content.slice(prefix.length).trim().split(/ +/);
+        this.commandName = this.argv[0].toLowerCase();
         this.args = this.argv.slice(1);
     }
 
@@ -110,7 +110,6 @@ class Arguments {
                 const pastArgs = this.args.slice(0, index);
                 const prefix: string = this.client.getService<ConfigService>('config').config(this.message.guildId)?.prefix ?? '!';
                 let input = this.message.content
-                    .toLowerCase()
                     .slice(prefix.length)
                     .trimStart()
                     .slice(this.commandName.length)

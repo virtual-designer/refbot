@@ -8,11 +8,14 @@ const zSnowflake = z.string().regex(/^\d+$/, "Must be a valid snowflake");
 
 const configSchema = z.object({
     prefix: z.string().default("!"),
-    register_commands_locally: z.boolean().default(false)
+    register_commands_locally: z.boolean().default(false),
+    moderator_permissions: z.object({
+        permission_sets: z.array(z.array(z.string())).default([['BanMembers'], ['ManageGuild']]),
+        roles: z.array(zSnowflake).default([]),
+        users: z.array(zSnowflake).default([]),
+    }).default({})
 });
 const configContainerSchema = z.record(zSnowflake, configSchema);
-
-type Config = z.infer<typeof configSchema>;
 
 class ConfigService extends Service {
     public readonly name = "config";
