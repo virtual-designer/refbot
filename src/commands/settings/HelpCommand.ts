@@ -47,7 +47,7 @@ class HelpCommand extends Command {
             const command = this.client.getService<CommandService>('command').commands.get(finalCommandName);
 
             if (!command) {
-                return context.error(`Command \`${finalCommandName.replace('::', ' ')})\` does not exist.`);
+                return context.error(`Command \`${finalCommandName.replace('::', ' ')}\` does not exist.`);
             }
 
             let description = '';

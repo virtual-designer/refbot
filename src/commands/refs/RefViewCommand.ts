@@ -21,7 +21,9 @@ class RefViewCommand extends Command {
             ephemeral: true
         });
 
-        const ref = await this.client.getService<ReferralService>('referral').findRef(code, context.isRanByModerator() ? undefined : context.user.id);
+        const ref = this.client
+            .getService<ReferralService>('referral')
+            .findRef(code, context.isRanByModerator() ? undefined : context.user.id, context.isRanByModerator() ? undefined : context.guild.id);
 
         if (!ref) {
             return context.error({
@@ -51,7 +53,7 @@ class RefViewCommand extends Command {
                         ] : []),
                         {
                             name: "Last Used At",
-                            value: ref.usedBy.length === 0 ? '*Not yet*' : `${time(ref.updatedAt, 'F')} (${time(ref.updatedAt, 'R')})`
+                            value: ref.usedBy.length === 0 ? '*Not yet*' : `${time(ref.lastUsedAt, 'F')} (${time(ref.lastUsedAt, 'R')})`
                         }
                     ],
                     footer: {

@@ -9,7 +9,7 @@ class RefCommand extends Command {
     public readonly description = 'Referral management command.';
     public readonly group = 'refs';
     public readonly syntax = '<subcommand> [...args]';
-    public readonly subcommands = ["create", "delete", "update", "list", "view", "show", "users"];
+    public readonly subcommands = ["create", "delete", "update", "list", "view", "show", "users", "use"];
     public readonly requiredError = `Please specify a valid subcommand! The available subcommands are: \`${this.subcommands.join('`, `')}\`.`;
     public readonly aliases = ['refs'];
 
@@ -32,6 +32,30 @@ class RefCommand extends Command {
                     .addStringOption(option =>
                         option.setName("code").setDescription("The unique code of the referral.").setRequired(true)
                     )
+            )
+            .addSubcommand(subcommand =>
+                subcommand.setName("delete").setDescription("Delete a referral")
+                    .addStringOption(option =>
+                        option.setName("code").setDescription("The unique code of the referral.").setRequired(true)
+                    )
+            )
+            .addSubcommand(subcommand =>
+                subcommand.setName("use").setDescription("Use a referral")
+                    .addStringOption(option =>
+                        option.setName("code").setDescription("The unique code of the referral.").setRequired(true)
+                    )
+            )
+            .addSubcommand(subcommand =>
+                subcommand.setName("list").setDescription("List all referrals available. [Moderator-only]")
+            )
+            .addSubcommand(subcommand =>
+                subcommand.setName("codeupdate").setDescription("Update a referral code")
+                    .addStringOption(option =>
+                        option.setName("code").setDescription("The current unique code of the referral.").setRequired(true),
+                    )
+                    .addStringOption(option =>
+                        option.setName("new_code").setDescription("The new unique code of the referral. Leave empty to auto-generate.")
+                    )
             );
     }
 
@@ -48,6 +72,13 @@ class RefCommand extends Command {
 
         if (!command) {
             return context.error(`Invalid subcommand: ${subcommand}`);
+        }
+
+        if (command.moderatorOnly && !context.isRanByModerator()) {
+            return context.error({
+                content: "You don't have permission to run this command.",
+                ephemeral: true
+            });
         }
 
         return command.handle(context);

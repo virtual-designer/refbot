@@ -1,4 +1,4 @@
-import { Client as DiscordClient, GatewayIntentBits } from 'discord.js';
+import { Client as DiscordClient, GatewayIntentBits, Partials } from 'discord.js';
 import { Logger } from "../utils/Logger";
 import * as path from "node:path";
 import * as fs from "node:fs/promises";
@@ -8,9 +8,8 @@ import { version } from '../../package.json';
 import Service from "./Service";
 import CommandService from "../services/CommandService";
 import Fetcher from "../utils/Fetcher";
-import { PrismaClient } from "@prisma/client";
 
-class Client extends DiscordClient {
+class Client<T extends boolean = boolean> extends DiscordClient<T> {
     protected static readonly intents = [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
@@ -18,6 +17,11 @@ class Client extends DiscordClient {
         GatewayIntentBits.DirectMessages,
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildEmojisAndStickers,
+        GatewayIntentBits.DirectMessageTyping,
+    ];
+    protected static readonly partials: Partials[] = [
+        Partials.GuildMember,
+        Partials.Channel
     ];
     public static readonly logger = new Logger('system', !process.env.NO_LOG_DATE_TIME);
     public readonly services = new Map<string, Service>();
@@ -26,23 +30,11 @@ class Client extends DiscordClient {
         'CommandService',
         'ReferralService'
     ];
-    private _prisma!: PrismaClient;
 
     public constructor() {
         super({
-            intents: Client.intents
-        });
-    }
-
-
-    get prisma() {
-        return this._prisma;
-    }
-
-    public initializeDatabase() {
-        this._prisma = new PrismaClient({
-            errorFormat: "pretty",
-            log: ["info", "warn", "error", "query"]
+            intents: Client.intents,
+            partials: Client.partials
         });
     }
 
@@ -50,7 +42,6 @@ class Client extends DiscordClient {
         Fetcher.client = this;
 
         await this.printBanner();
-        this.initializeDatabase();
         await this.loadServices();
         await this.loadEvents();
         await this.loadCommands();
@@ -124,7 +115,7 @@ class Client extends DiscordClient {
         return Client.logger;
     }
 
-    getService<S extends Service = Service>(name: string) {
+    getService<S extends Service = Service>(name: S['name']) {
         return this.services.get(name) as S;
     }
 }

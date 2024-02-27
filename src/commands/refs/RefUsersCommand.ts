@@ -10,6 +10,7 @@ class RefUsersCommand extends Command {
     public readonly group = 'refs';
     public readonly syntax = '<code: string>';
     public readonly supportsInteractions = false;
+    public readonly moderatorOnly: boolean = true;
 
     public async handle(context: Context) {
         const code: string = (context.type === "legacy" ? await context.args.at(1, ArgumentType.String, false, {
@@ -20,7 +21,9 @@ class RefUsersCommand extends Command {
             ephemeral: true
         });
 
-        const ref = await this.client.getService<ReferralService>('referral').findRef(code, context.isRanByModerator() ? undefined : context.user.id);
+        const ref = this.client
+            .getService<ReferralService>('referral')
+            .findRef(code, context.isRanByModerator() ? undefined : context.user.id, context.isRanByModerator() ? undefined : context.guild.id);
 
         if (!ref) {
             return context.error({
@@ -32,7 +35,7 @@ class RefUsersCommand extends Command {
         let description = '';
 
         for (const user of ref.usedBy) {
-            description += `* <@${user.id}> - \`${user.id}\` - ${time(user.createdAt, 'R')}\n`;
+            description += `* <@${user}> - \`${user}\`\n`;
         }
 
         await context.reply({
@@ -60,7 +63,7 @@ class RefUsersCommand extends Command {
                         }
                     ],
                     footer: {
-                        text: `Only ${ref.createdBy === context.user.id ? 'you' : 'the creator'} and the moderators can see statistics for this referral`
+                        text: `Only the moderators can see users for this referral`
                     },
                     timestamp: ref.createdAt.toISOString()
                 }

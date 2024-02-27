@@ -22,7 +22,9 @@ class RefCreateCommand extends Command {
             ephemeral: true
         });
 
-        const ref = await this.client.getService<ReferralService>('referral').createCode(context.user.id, code ?? undefined);
+        const ref = await this.client
+            .getService<ReferralService>('referral')
+            .createCode(context.user.id, context.guild.id, code ?? undefined);
 
         if (!ref) {
             return context.error(context.isRanByModerator() ? `The referral code is already taken. You're being told the exact reason because you're a moderator.` : `That referral code is not available at the moment.`);

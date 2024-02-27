@@ -19,7 +19,7 @@ const configContainerSchema = z.record(zSnowflake, configSchema);
 
 class ConfigService extends Service {
     public readonly name = "config";
-    public readonly configPath = process.env.BOT_CONFIG_PATH ?? path.resolve(__dirname, '../../config.json');
+    public readonly configPath = process.env.CONFIG_FILE_PATH ?? path.resolve(__dirname, '../../config.json');
     private _config: z.infer<typeof configContainerSchema> = {};
 
     public override async boot() {

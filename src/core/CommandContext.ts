@@ -1,5 +1,5 @@
 import {
-    ChatInputCommandInteraction, GuildMember, InteractionDeferReplyOptions,
+    ChatInputCommandInteraction, Guild, GuildBasedChannel, GuildMember, InteractionDeferReplyOptions,
     InteractionReplyOptions, InteractionResponse,
     Message,
     MessageCreateOptions,
@@ -52,6 +52,15 @@ abstract class CommandContext {
 
     get member(): GuildMember {
         return this instanceof InteractionCommandContext ? this.interaction.member as GuildMember : this instanceof LegacyCommandContext ? this.message.member! : (null as never);
+    }
+
+    get guild(): Guild {
+        return this instanceof InteractionCommandContext ? this.interaction.guild as Guild : this instanceof LegacyCommandContext ? this.message.guild! as Guild : (null as never);
+    }
+
+
+    get channel(): GuildBasedChannel {
+        return this instanceof InteractionCommandContext ? this.interaction.channel as GuildBasedChannel : this instanceof LegacyCommandContext ? this.message.channel! as GuildBasedChannel : (null as never);
     }
 
     public defer(options?: InteractionDeferReplyOptions) {
