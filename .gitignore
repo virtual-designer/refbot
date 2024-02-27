@@ -6,3 +6,4 @@ bun.lockb
 .vscode/
 build/
 src/commands/testing
+/data.json
