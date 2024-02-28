@@ -1,4 +1,4 @@
-import Command from "../../core/Command";
+import Command, { Builder } from "../../core/Command";
 import { Context } from "../../core/CommandContext";
 import { ArgumentType } from "../../core/Arguments";
 import CommandService from "../../services/CommandService";
@@ -13,7 +13,7 @@ class RefCommand extends Command {
     public readonly requiredError = `Please specify a valid subcommand! The available subcommands are: \`${this.subcommands.join('`, `')}\`.`;
     public readonly aliases = ['refs'];
 
-    public build(builder: SlashCommandBuilder) {
+    public build(builder: SlashCommandBuilder): Builder {
         return builder
             .addSubcommand(subcommand =>
                 subcommand.setName("create").setDescription("Create a referral")

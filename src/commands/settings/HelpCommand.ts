@@ -1,8 +1,8 @@
-import Command from "../../core/Command";
+import Command, { Builder } from "../../core/Command";
 import { Context } from "../../core/CommandContext";
 import { ArgumentType } from "../../core/Arguments";
 import CommandService from "../../services/CommandService";
-import { codeBlock, Colors, heading, HeadingLevel, inlineCode } from "discord.js";
+import { codeBlock, Colors, heading, HeadingLevel, inlineCode, SlashCommandBuilder } from "discord.js";
 
 class HelpCommand extends Command {
     public readonly name = 'help';
@@ -10,6 +10,12 @@ class HelpCommand extends Command {
     public readonly group = 'settings';
     public readonly syntax = '[command_name]';
     public readonly aliases = ['?'];
+
+    public build(builder: SlashCommandBuilder): Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup"> {
+        return builder
+            .addStringOption(option => option.setName("command").setDescription("Show info for a specific command"))
+            .addStringOption(option => option.setName("subcommand").setDescription("Show info for a specific subcommand"));
+    }
 
     public async handle(context: Context) {
         const command: string | undefined = (context.type === "legacy" ? await context.args.at(0, ArgumentType.String, true) : context.interaction.options.getString('command'))?.toLowerCase();

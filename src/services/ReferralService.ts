@@ -20,8 +20,11 @@ class ReferralService extends Service {
     public readonly cache = new Collection<string, Referral>();
     private currentId: number = 1;
     public readonly dataFilePath = process.env.DATA_FILE_PATH ?? path.resolve(__dirname, '../../data.json');
+    public readonly alpha: string[] = [];
 
     public async boot() {
+        this.generateAlphabetTable();
+
         if (!await FileSystem.exists(this.dataFilePath)) {
             await FileSystem.writeFile(this.dataFilePath, {
                 currentId: 1,
@@ -30,6 +33,22 @@ class ReferralService extends Service {
         }
 
         await this.reload();
+    }
+
+    protected generateAlphabetTable() {
+        for (let i = 48; i < 123; i++) {
+            if (i === 58) {
+                i = 65;
+            }
+            else if (i === 91) {
+                i = 97;
+            }
+
+            this.alpha.push(String.fromCharCode(i));
+        }
+
+        this.alpha.push('-');
+        console.log(this.alpha);
     }
 
     public async reload() {
@@ -62,8 +81,13 @@ class ReferralService extends Service {
     }
 
     public generateRandomCode(length: number = 16) {
-        const code = crypto.randomBytes(length).toString('base64');
-        return code.replace(/=/g, '_');
+        let code = '';
+
+        for (let i = 0; i < length; i++) {
+            code += this.alpha.at(Math.floor(Math.random() * this.alpha.length));
+        }
+
+        return code;
     }
 
     async createCode(createdBy: Snowflake, guildId: Snowflake, code?: string): Promise<Referral | null> {
@@ -98,8 +122,19 @@ class ReferralService extends Service {
             return { ref: null, error: "No such referral found with that code!" };
         }
 
+        if (ref.createdBy === userId) {
+            return { ref: null, error: "You may not use your own referral code!" };
+        }
+
         if (ref.usedBy.includes(userId)) {
             return { ref: null, error: "You have already used this referral code!" };
+        }
+
+        for (const ref of this.cache.values()) {
+            if (ref.usedBy.includes(userId) && ref.guildId === guildId) {
+                const guild = this.client.guilds.cache.get(ref.guildId);
+                return { ref: null, error: `You have already used a referral code in ${guild?.name ?? 'the server'}!` };
+            }
         }
 
         ref.usedBy.push(userId);

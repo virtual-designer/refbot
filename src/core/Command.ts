@@ -9,7 +9,7 @@ import {
 import { InteractionCommandContext, LegacyCommandContext } from "./CommandContext";
 import { Arguments, InvalidArgumentException } from "./Arguments";
 
-export type Builder = SlashCommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder;
+export type Builder = SlashCommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
 
 abstract class Command extends HasClient {
     public abstract readonly name: string;
