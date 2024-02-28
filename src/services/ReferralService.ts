@@ -48,7 +48,6 @@ class ReferralService extends Service {
         }
 
         this.alpha.push('-');
-        console.log(this.alpha);
     }
 
     public async reload() {
