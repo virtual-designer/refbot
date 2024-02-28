@@ -26,7 +26,7 @@ class RefListCommand extends Command {
         const timestamp = new Date().toISOString();
 
         const paginator = new Pagination(refs.reverse(), {
-            client: this.client as Client<boolean>,
+            client: this.client as unknown as Client<boolean>,
             guildId: context.guild.id,
             channelId: context.channel.id,
             userId: context.user.id,
